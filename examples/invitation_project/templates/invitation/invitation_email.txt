@@ -1,0 +1,2 @@
+Click this link or copy it into your browser to accept this invitation:
+http://{{ site.domain }}{% url invitation_accepted invitation.code %}

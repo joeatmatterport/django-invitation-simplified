@@ -1,0 +1,185 @@
+=================
+Django invitation
+=================
+
+
+This is a fairly simple user-invitation application for Django_,
+designed to make allowing user signups as painless as possible
+with quota restrictions: you need to be invited by someone else and
+the number of invitations is limited by user.
+
+.. _Django: http://www.djangoproject.com/
+
+
+Overview
+========
+
+This application enables a common user-invitation workflow:
+
+1. User fills out an invitation form, entering an email address.
+
+2. An invitation code is created, and an invitation link is sent to
+   the submitted email address.
+
+3. User clicks the invitation link, the
+   user is able to register in and begin contributing to your site.
+
+Various methods of extending and customizing the invitation process
+are also provided.
+
+
+Installation
+============
+
+In order to use django-invitation, you will need to have a
+functioning installation of Django 1.0 or newer; due to changes needed
+to stabilize Django's APIs prior to the 1.0 release,
+django-invitation will not work with older releases of Django.
+
+
+Installing from a Mercurial checkout
+------------------------------------
+
+If you have `Mercurial`_ installed on your computer, you can
+obtain a complete copy of django-invitation by typing::
+
+    hg clone http://bitbucket.org/jsma/django-invitation/
+
+Inside the resulting "django-invitation" directory will be a
+directory named "invitation", which is the actual Python module for
+this application; you can symlink it from somewhere on your Python
+path. Using a symlink offers easy upgrades: simply running ``hg pull -u``
+inside the django-invitation directory will fetch updates from the
+main repository and apply them to your local copy.
+
+.. _Mercurial: http://www.selenic.com/mercurial/wiki/
+
+
+Basic use
+=========
+
+To use the invitation system with all its default settings, you'll
+need to do the following:
+
+1. Add ``invitation`` to the ``INSTALLED_APPS`` setting of your
+   Django project.
+
+2. Add the setting ``ACCOUNT_INVITATION_DAYS`` to your settings file;
+   this should be the number of days invitations will remain valid
+   after an invitation is sent. By default, users can send unlimited
+   invitations. If you would like to limit the number of invitations,
+   add the setting ``INVITATIONS_PER_USER`` to your settings file; 
+   this should be an integer that will determine the maximum number 
+   of invitations a single user may send.
+
+3. Create the necessary templates (see the section on templates below
+   for details).
+
+4. Add this line to your site's root URLConf **before registration urls**::
+   
+       (r'^accounts/', include('invitation.urls')),
+
+5. Link people to ``/accounts/invite/`` so they can start inviting.
+
+
+Templates used by django-invitation
+===================================
+
+The views included in django-invitation make use of five templates:
+
+* ``invitation/invitation_form.html`` displays the invitation
+  form for users to invite contacts.
+
+* ``invitation/invitation_complete.html`` is displayed after the
+  invitation email has been sent, to tell the user his contact has been 
+  emailed.
+
+* ``invitation/invitation_email_subject.txt`` is used for the
+  subject of the invitation email.
+
+* ``invitation/invitation_email.txt`` is used for the body of the
+  invitation email.
+
+* ``invitation/accepted.html`` is displayed when a user attempts to
+  register his/her account.
+
+* ``invitation/invalid.html`` is displayed if the invitation link was 
+  invalid (expired, or bogus invitation code) or if a user attempts
+  to send and invitation and they have no remaining invites left.
+
+Examples of these templates are included in the example application.
+These are NOT suitable for public use and are only to be used as part
+of the example application.
+
+Additionally, the URLConf provided with django-invitation includes
+URL patterns for useful views in Django's built-in authentication
+application -- this means that a single ``include`` in your root
+URLConf can wire up invitation process.
+
+
+How it works
+============
+
+Using the recommended default configuration, the URL
+``/accounts/invite/`` will map to the view
+``invitation.views.invite``, which displays an invitation form
+(an instance of ``invitation.forms.InvitationForm``); this form
+asks for an email address. It then does three things:
+
+1. Validates the form to be sure that's a valid email address.
+
+2. Creates an instance of ``invitation.models.Invitation``,
+   stores an activation code (a SHA1 hash generated from the username
+   of the user sending the invitation plus a randomly-generated "salt").
+
+3. Sends an email to the address they supplied  containing a link
+   which can be clicked to register a new account.
+
+For details on customizing this process, including use of alternate
+invitation form classes, read the code.
+
+After the activation email has been sent,
+``invitation.views.invite`` issues a redirect to the URL
+``/accounts/invite/complete/``. By default, this is mapped to the
+``direct_to_template`` generic view, and displays the template
+``invitation/invitation_complete.html``; this is intended to show
+a short message telling the user his/her contact has been emailed.
+
+The invitation link will map to the view
+``invitation.views.invitation_accepted``, which will attempt to verify the
+activation code.
+If the invitation has expired (this is controlled by the setting
+``ACCOUNT_INVITATION_DAYS``, as described above), the login page will not 
+be reachable (see the section on maintenance below for instructions on 
+cleaning out expired invitations which have not been used).
+
+The optional ``INVITATIONS_PER_USER`` setting lets you decide the 
+initial number of invitations per user. Each accepted invitation consumes one 
+invitation. NOTE: Expired invitations that went unused can be reclaimed and 
+reused if you regularly use the recommended cleanup script mentioned below. 
+If you wish to allow unlimited invitations, simply do not add this setting.
+
+
+Maintenance
+===========
+
+Inevitably, a site which uses a two-step process for user invitation --
+invitation followed by acceptance -- will accumulate a certain
+number of invitations which were created but never used. These
+invitations clutter up the database, so it's desirable to clean them out
+periodically. For this purpose, a `Django command`_,
+``cleanupinvitation``, is provided, which is
+suitable for use as a regular cron job.
+
+.. _Django command: http://docs.djangoproject.com/en/dev/ref/django-admin/#available-subcommands
+
+
+If you spot a bug
+=================
+
+Head over to this application's `project page on Bitbucket`_ and
+check `the issues list`_ to see if it's already been reported. If not,
+open a new issue and I'll do my best to respond quickly.
+
+.. _project page on Bitbucket: http://bitbucket.org/jsma/django-invitation/
+.. _the issues list: http://bitbucket.org/jsma/django-invitation/issues/

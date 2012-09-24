@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}login{% endblock title %}
+
+{% block content %}
+{% if form.non_field_errors %}
+    {{ form.non_field_errors }}
+{% endif %}
+<form method="post" action="">
+    <fieldset>
+        <dl>
+            <dt>{{ form.username.label_tag }}</dt>
+            <dd>{{ form.username }} {% if form.username.errors %}<span class="error">{{ form.username.errors|join:", " }}</span>{% endif %}</dd>
+            <dt>{{ form.password.label_tag }}</dt>
+            <dd>{{ form.password }} {% if form.password.errors %}<span class="error">{{form.password.errors|join:", " }}</span>{% endif %}</dd>
+        </dl>
+        <input type="submit" value="login" />
+        <input type="hidden" name="next" value="{{ next }}" />
+    </fieldset>
+</form>
+{% endblock %}

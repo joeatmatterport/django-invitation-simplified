@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="" method="post">
+    <fieldset>
+        <dl>
+            <dt>{{ form.username.label_tag }}</dt>
+            <dd>{{ form.username }} {% if form.username.errors %}<span class="error">{{ form.username.errors|join:", " }}</span>{% endif %}</dd>
+            <dt>{{ form.password1.label_tag }}</dt>
+            <dd>{{ form.password1 }} {% if form.password1.errors %}<span class="error">{{ form.password1.errors|join:", " }}</span>{% endif %}</dd>
+            <dt>{{ form.password2.label_tag }}</dt>
+            <dd>{{ form.password2 }} {% if form.password2.errors %}<span class="error">{{ form.password2.errors|join:", " }}</span>{% endif %}</dd>
+        </dl>
+    </fieldset>
+    <input type="submit" value="Create Account">
+</form>
+{% endblock content %}

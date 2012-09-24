@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <title>{% block title %}{% endblock title %}</title>
+    </head>
+    <body>
+        <h1>django-invitation Example Project</h1>
+		{% block content %}{% endblock content %}
+		<ul>
+            {% if user.is_authenticated %}
+            <li><a href="{% url logout %}">logout</a></li>
+            {% else %}
+            <li><a href="{% url login %}">login</a></li>
+            {% endif %}
+        </ul>
+    </body>
+</html>

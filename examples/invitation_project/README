@@ -1,0 +1,19 @@
+This is a very basic example project to demonstrate how django-invitation works.
+
+The templates are un-styled and stripped to the bare essentials and are NOT 
+meant to be used outside of this example project.
+
+If you do not have an email server configured for sending the invitations 
+(or do not want to send actual email while examining the demo project), 
+you can start a dummy SMTP server with the following command:
+
+    sudo python -m smtpd -n -c DebuggingServer localhost:25
+
+This will just print the emails to standard output. The example email
+messages are short, so it should be easy to find the invitation link. 
+
+Copy and paste this invitation url into your browser to 'accept' the 
+invitation and complete the process.
+
+If you do want to send actual email, you will need to add your email server connection
+settings to a settings_local.py file in the examples/invitation_project/ directory.

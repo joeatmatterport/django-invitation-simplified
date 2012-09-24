@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Invite a friend</h1>
+{% if remaining_invitations %}
+<p>You have {{ remaining_invitations }} remaining invitation{{ remaining_invitations|pluralize }} left.</p>
+{% endif %}
+<p>Enter your friend's email address below to send them an invitation to join this site.</p>
+<form action="" method="post">
+    <fieldset>
+        <dl>
+            <dt>{{ form.email.label_tag }}</dt>
+            <dd>{{ form.email }} {% if form.email.errors %}<span class="error">{{ form.email.errors|join:", " }}</span>{% endif %}</dd>
+        </dl>
+    </fieldset>
+    <input type="submit" value="Send Invitation" />
+</form>
+{% endblock content %}
