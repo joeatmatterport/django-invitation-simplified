@@ -8,7 +8,8 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.simple import direct_to_template
+from django.views.generic import ListView
+
 
 from invitation.models import Invitation
 from invitation.forms import InvitationForm
@@ -21,7 +22,7 @@ def invite(request, success_url=None, form_class=InvitationForm,
         remaining_invitations = Invitation.objects.remaining_invitations_for_user(request.user)
         if not remaining_invitations:
             error_msg = _("You do not have any remaining invitations.")
-            return direct_to_template(request, 'invitation/invalid.html', {'error_msg': error_msg})
+            return render(request, 'invitation/invalid.html', {'error_msg': error_msg})
         else:
             context['remaining_invitations'] = remaining_invitations
 
@@ -39,7 +40,7 @@ def invite(request, success_url=None, form_class=InvitationForm,
     else:
         form = form_class()
     context['form'] = form
-    return direct_to_template(request, template_name, context)
+    return render(request, template_name, context)
 
 @transaction.commit_on_success
 def invitation_accepted(request, invitation_code, success_url=settings.LOGIN_REDIRECT_URL,
@@ -53,7 +54,7 @@ def invitation_accepted(request, invitation_code, success_url=settings.LOGIN_RED
         error_msg = _("The invitation code is not valid. Please check the link provided and try again.")
 
     if error_msg is not None:
-        return direct_to_template(request, 'invitation/invalid.html', {'error_msg': error_msg})
+        return render(request, 'invitation/invalid.html', {'error_msg': error_msg})
 
     if request.method == 'POST':
         form = form_class(request.POST)
@@ -69,6 +70,6 @@ def invitation_accepted(request, invitation_code, success_url=settings.LOGIN_RED
             return HttpResponseRedirect(success_url)
     else:
         form = form_class()
-    return direct_to_template(request, template_name,
+    return render(request, template_name,
                               {'form': form,
                                'invitation': invitation})
