@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='django-invitation',
-    version='1.0',
+    name='django-invitation-simplified',
+    version='1.1',
     description='Simple Django app to allow user registration by invitation.',
-    author='John-Scott Atlakson',
-    author_email='john.scott.atlakson@gmail.com',
-    url='http://bitbucket.org/jsma/django-invitation/',
+    author='Joe Carpenter',
+    author_email='lungofish@gmail.com',
+    url='https://github.com/joeatmatterport/django-invitation-simplified',
     packages=find_packages(),
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -23,5 +23,4 @@ setup(
     zip_safe=False,
     # Tells setuptools to download setuptools_hg before running setup.py so
     # it can find the data files under Hg version control.
-    setup_requires=['setuptools_hg'],
 )
