@@ -18,7 +18,9 @@ from invitation.forms import InvitationForm
 def invite(request, success_url=None, form_class=InvitationForm,
            template_name='invitation/invitation_form.html',):
     context = {}
-    if hasattr(settings, 'INVITATIONS_PER_USER'):
+    if request.user.is_staff:
+        context['remaining_invitations'] = 10
+    elif hasattr(settings, 'INVITATIONS_PER_USER'):
         remaining_invitations = Invitation.objects.remaining_invitations_for_user(request.user)
         if not remaining_invitations:
             error_msg = _("You do not have any remaining invitations.")

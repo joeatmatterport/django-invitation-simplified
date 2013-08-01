@@ -25,3 +25,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+/examples/invitation_project/templates/.DS_Store
