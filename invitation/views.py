@@ -9,7 +9,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView
-
+from django.shortcuts import render
 
 from invitation.models import Invitation
 from invitation.forms import InvitationForm
@@ -18,7 +18,7 @@ from invitation.forms import InvitationForm
 def invite(request, success_url=None, form_class=InvitationForm,
            template_name='invitation/invitation_form.html',):
     context = {}
-    if 'INVITATIONS_PER_USER' in settings.get_all_members():
+    if hasattr(settings, 'INVITATIONS_PER_USER'):
         remaining_invitations = Invitation.objects.remaining_invitations_for_user(request.user)
         if not remaining_invitations:
             error_msg = _("You do not have any remaining invitations.")

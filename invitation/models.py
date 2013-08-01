@@ -9,7 +9,7 @@ from django.db import models
 from django.template.loader import render_to_string
 from django.utils.hashcompat import sha_constructor
 from django.utils.translation import ugettext_lazy as _
-
+from django.utils import timezone
 __all__ = ['Invitation']
 
 class InvitationManager(models.Manager):
@@ -32,7 +32,7 @@ class InvitationManager(models.Manager):
         """ Returns the number of remaining invitations for a given ``User``
         if ``INVITATIONS_PER_USER`` has been set.
         """
-        if 'INVITATIONS_PER_USER' in settings.get_all_members():
+        if hasattr(settings, 'INVITATIONS_PER_USER'):
             inviteds_count = self.filter(from_user=user).count()
             remaining_invitations = settings.INVITATIONS_PER_USER - inviteds_count
             if remaining_invitations < 0:
@@ -64,7 +64,7 @@ class Invitation(models.Model):
         return u"Invitation from %s to %s" % (self.from_user.username, self.email)
 
     def expired(self):
-        return self.expiration_date < datetime.datetime.now()
+        return timezone.make_aware(self.expiration_date,timezone.get_default_timezone()) < timezone.now()
 
     def send(self, from_email=settings.DEFAULT_FROM_EMAIL):
         """
