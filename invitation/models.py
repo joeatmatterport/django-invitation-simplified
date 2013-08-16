@@ -2,7 +2,7 @@ import datetime
 import random
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.sites.models import Site
 from django.core.mail import send_mail
 from django.db import models
@@ -10,23 +10,30 @@ from django.template.loader import render_to_string
 from django.utils.hashcompat import sha_constructor
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+
 __all__ = ['Invitation']
 
 class InvitationManager(models.Manager):
-    def create_invitation(self, user, email):
+    def create_invitation(self, user, email, groups):
         """
         Create an ``Invitation`` and returns it.
         
         The code for the ``Invitation`` will be a SHA1 hash, generated
         from a combination of the ``User``'s username and a random salt.
         """
+
         kwargs = {'from_user': user, 'email': email}
         date_invited = datetime.datetime.now()
         kwargs['date_invited'] = date_invited
+        #kwargs['groups':groups]
         kwargs['expiration_date'] = date_invited + datetime.timedelta(settings.ACCOUNT_INVITATION_DAYS)
         salt = sha_constructor(str(random.random())).hexdigest()[:5]
         kwargs['code'] = sha_constructor("%s%s%s" % (datetime.datetime.now(), salt, user.username)).hexdigest()
-        return self.create(**kwargs)
+        print kwargs
+        invite = self.create(**kwargs)
+        for gr in groups:
+            invite.groups.add(gr)
+        return invite
 
     def remaining_invitations_for_user(self, user):
         """ Returns the number of remaining invitations for a given ``User``
@@ -57,6 +64,7 @@ class Invitation(models.Model):
     from_user = models.ForeignKey(User, related_name='invitations_sent')
     to_user = models.ForeignKey(User, null=True, blank=True, related_name='invitation_received')
     email = models.EmailField(unique=True)
+    groups = models.ManyToManyField(Group, related_name='invitations_groups')
 
     objects = InvitationManager()
 

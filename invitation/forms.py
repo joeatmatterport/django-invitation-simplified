@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils.translation import ugettext_lazy as _
 
 from invitation.models import Invitation
@@ -13,6 +13,7 @@ class InvitationForm(forms.Form):
     but different usernames to create user accounts.
     """
     email = forms.EmailField()
+    groups = forms.ModelMultipleChoiceField( queryset=Group.objects.all(), widget=forms.SelectMultiple(attrs={'size':'20'}))
 
     def clean_email(self):
         email = self.cleaned_data["email"].strip().lower()

@@ -32,7 +32,8 @@ def invite(request, success_url=None, form_class=InvitationForm,
         form = form_class(data=request.POST)
         if form.is_valid():
             email = form.cleaned_data["email"]
-            invitation = Invitation.objects.create_invitation(request.user, email)
+            groups = form.cleaned_data["groups"]
+            invitation = Invitation.objects.create_invitation(request.user, email, groups)
             invitation.send()
             # success_url needs to be dynamically generated here; setting a
             # a default value using reverse() will cause circular-import
@@ -63,6 +64,9 @@ def invitation_accepted(request, invitation_code, success_url=settings.LOGIN_RED
         if form.is_valid():
             user = form.save(commit=False)
             user.email = invitation.email
+            user.save()
+            for gr in invitation.groups.all():
+                user.groups.add(gr)
             user.save()
             invitation.used = True
             invitation.to_user = user
