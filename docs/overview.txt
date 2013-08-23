@@ -10,6 +10,10 @@ the number of invitations is limited by user.
 
 .. _Django: http://www.djangoproject.com/
 
+This particular version has been updated to work with Django 1.5,
+which did away with several view/render/url methods and classes, and
+changed the way settings are retrieved.
+
 
 Overview
 ========

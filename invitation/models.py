@@ -14,7 +14,7 @@ from django.utils import timezone
 __all__ = ['Invitation']
 
 class InvitationManager(models.Manager):
-    def create_invitation(self, user, email, groups):
+    def create_invitation(self, user, email):
         """
         Create an ``Invitation`` and returns it.
         
@@ -31,8 +31,6 @@ class InvitationManager(models.Manager):
         kwargs['code'] = sha_constructor("%s%s%s" % (datetime.datetime.now(), salt, user.username)).hexdigest()
         print kwargs
         invite = self.create(**kwargs)
-        for gr in groups:
-            invite.groups.add(gr)
         return invite
 
     def remaining_invitations_for_user(self, user):
@@ -64,7 +62,6 @@ class Invitation(models.Model):
     from_user = models.ForeignKey(User, related_name='invitations_sent')
     to_user = models.ForeignKey(User, null=True, blank=True, related_name='invitation_received')
     email = models.EmailField(unique=True)
-    groups = models.ManyToManyField(Group, related_name='invitations_groups')
 
     objects = InvitationManager()
 

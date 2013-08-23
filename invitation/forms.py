@@ -13,7 +13,6 @@ class InvitationForm(forms.Form):
     but different usernames to create user accounts.
     """
     email = forms.EmailField()
-    groups = forms.ModelMultipleChoiceField( queryset=Group.objects.all(), widget=forms.SelectMultiple(attrs={'size':'20'}))
 
     def clean_email(self):
         email = self.cleaned_data["email"].strip().lower()
