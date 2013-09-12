@@ -2,6 +2,7 @@
 
 {% block content %}
 <form action="" method="post">
+    {% csrf_token %}
     <fieldset>
         <dl>
             <dt>{{ form.username.label_tag }}</dt>
