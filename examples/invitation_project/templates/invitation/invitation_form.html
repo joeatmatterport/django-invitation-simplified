@@ -7,6 +7,7 @@
 {% endif %}
 <p>Enter your friend's email address below to send them an invitation to join this site.</p>
 <form action="" method="post">
+    {% csrf_token %}
     <fieldset>
         <dl>
             <dt>{{ form.email.label_tag }}</dt>
