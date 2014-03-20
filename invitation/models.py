@@ -71,22 +71,34 @@ class Invitation(models.Model):
     def expired(self):
         return timezone.make_aware(self.expiration_date,timezone.get_default_timezone()) < timezone.now()
 
-    def send(self, from_email=settings.DEFAULT_FROM_EMAIL):
+    def send(self, from_email=settings.DEFAULT_FROM_EMAIL,
+        subject_template='invitation/invitation_email_subject.txt',
+        message_template='invitation/invitation_email.txt'):
+        
         """
         Send an invitation email.
         """
         current_site = Site.objects.get_current()
 
-        subject = render_to_string('invitation/invitation_email_subject.txt',
+        subject = render_to_string(subject_template,
                                    {'invitation': self,
                                     'site': current_site})
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
 
-        message = render_to_string('invitation/invitation_email.txt',
+        message = render_to_string(message_template,
                                    {'invitation': self,
                                     'expiration_days': settings.ACCOUNT_INVITATION_DAYS,
                                     'site': current_site})
 
         send_mail(subject, message, from_email, [self.email])
+
+    #Extends the invitation for X days from the time it's called, where X is the account_invitation_days
+    def extend(self):
+        date_now = datetime.datetime.now()
+        extend_time = timedelta(days=settings.ACCOUNT_INVITATION_DAYS)
+        self.expiration_date = date_now + extend_time
+        self.save()
+
+
 
